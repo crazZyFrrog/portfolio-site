@@ -4,6 +4,7 @@ import { getCaseBySlug } from '../data/cases';
 import { mailtoHref } from '../data/profile';
 import Badge from '../components/Badge';
 import BeforeAfter from '../components/BeforeAfter';
+import { CaseScreenshotGrid, CaseVideo } from '../components/CaseMedia';
 import MediaPlaceholder from '../components/MediaPlaceholder';
 import Section, { BulletList, TagList } from '../components/Section';
 import NotFoundPage from './NotFoundPage';
@@ -44,7 +45,11 @@ export default function CasePage() {
       </header>
 
       <div className="mb-10">
-        <MediaPlaceholder label="Product Tour — видео-демо" type="video" />
+        {caseStudy.videoSrc ? (
+          <CaseVideo src={caseStudy.videoSrc} title={caseStudy.name} />
+        ) : (
+          <MediaPlaceholder label="Product Tour — видео-демо" type="video" />
+        )}
       </div>
 
       <div className="space-y-12">
@@ -105,11 +110,10 @@ export default function CasePage() {
         )}
 
         <Section title="Скриншоты">
-          <div className="grid gap-4 sm:grid-cols-2">
-            {caseStudy.screenshotLabels.map((label) => (
-              <MediaPlaceholder key={label} label={label} />
-            ))}
-          </div>
+          <CaseScreenshotGrid
+            screenshots={caseStudy.screenshots}
+            placeholderLabels={caseStudy.screenshotLabels}
+          />
         </Section>
 
         <Section title="Стек">

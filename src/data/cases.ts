@@ -5,6 +5,11 @@ export interface BeforeAfterRow {
   after: string;
 }
 
+export interface CaseScreenshot {
+  label: string;
+  src: string;
+}
+
 export interface CaseStudy {
   slug: string;
   name: string;
@@ -25,7 +30,10 @@ export interface CaseStudy {
   miniResearch?: string;
   targetAudience?: string[];
   limitations?: string[];
-  screenshotLabels: string[];
+  videoSrc?: string;
+  screenshots?: CaseScreenshot[];
+  /** Placeholder labels when screenshots not yet added */
+  screenshotLabels?: string[];
   showTestimonial: boolean;
   order: number;
 }
@@ -82,12 +90,15 @@ export const cases: CaseStudy[] = [
     ],
     stack: ['React 18', 'Vite', 'Tailwind CSS', 'PHP', 'SQLite', 'Telegram Bot API', 'VK API', 'Timeweb'],
     role: ['Full-stack разработка', 'Интеграции Telegram/VK', 'Админка', 'Деплой и передача заказчику'],
-    screenshotLabels: [
-      'Главный экран — hero и CTA «Записаться»',
-      'Модалка записи — мастер, услуга, дата',
-      'Подтверждение записи',
-      'Уведомление в Telegram / VK',
-      'Админка — список записей и слоты',
+    videoSrc: '/video/salon-lt-demo.mp4',
+    screenshots: [
+      { label: 'Главный экран — hero и CTA «Записаться»', src: '/images/salon-lt/01-hero.png' },
+      { label: 'Выбор услуги — каталог по категориям', src: '/images/salon-lt/02-usluga.png' },
+      { label: 'Выбор даты и свободного времени', src: '/images/salon-lt/03-vremya.png' },
+      { label: 'Подтверждение записи', src: '/images/salon-lt/04-podtverzhdenie.png' },
+      { label: 'Уведомление в Telegram', src: '/images/salon-lt/05-telegram.png' },
+      { label: 'Уведомление в VK', src: '/images/salon-lt/06-vk.png' },
+      { label: 'Админка — список записей', src: '/images/salon-lt/07-admin.png' },
     ],
     showTestimonial: false,
     order: 1,
