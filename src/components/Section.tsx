@@ -1,3 +1,5 @@
+import ScrollReveal from './ScrollReveal';
+
 interface SectionProps {
   id?: string;
   title: string;
@@ -7,10 +9,12 @@ interface SectionProps {
 
 export default function Section({ id, title, children, className = '' }: SectionProps) {
   return (
-    <section id={id} className={`scroll-mt-24 ${className}`}>
-      <h2 className="mb-4 text-lg font-semibold text-white sm:text-xl">{title}</h2>
-      {children}
-    </section>
+    <ScrollReveal>
+      <section id={id} className={`scroll-mt-24 ${className}`}>
+        <h2 className="mb-4 text-lg font-semibold text-white sm:text-xl">{title}</h2>
+        {children}
+      </section>
+    </ScrollReveal>
   );
 }
 
@@ -41,7 +45,7 @@ export function TagList({ items }: TagListProps) {
       {items.map((item) => (
         <span
           key={item}
-          className="rounded-lg bg-ink-800 px-3 py-1.5 text-xs font-medium text-ink-300"
+          className="glass rounded-lg px-3 py-1.5 text-xs font-medium text-ink-300 transition hover:text-ink-100"
         >
           {item}
         </span>

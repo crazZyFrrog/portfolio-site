@@ -1,3 +1,8 @@
+export interface Metric {
+  value: string;
+  label: string;
+}
+
 export const profile = {
   name: 'Владислав Левоненко',
   title: 'вайбкодер',
@@ -11,6 +16,12 @@ export const profile = {
   ],
   email: 'vladislavlevonenko@gmail.com',
   contactSubject: 'Обсуждение проекта — портфолио',
+  metrics: [
+    { value: '2', label: 'проекта в production' },
+    { value: '12+', label: 'экранов и страниц' },
+    { value: '5', label: 'интеграций (API, боты)' },
+    { value: 'Full-stack', label: 'от идеи до деплоя' },
+  ] as Metric[],
 };
 
 export function mailtoHref(subject?: string): string {
