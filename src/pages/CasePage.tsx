@@ -7,8 +7,6 @@ import BeforeAfter from '../components/BeforeAfter';
 import { CaseScreenshotGrid, CaseVideo } from '../components/CaseMedia';
 import MediaPlaceholder from '../components/MediaPlaceholder';
 import Section, { BulletList, TagList } from '../components/Section';
-import ScrollReveal from '../components/ScrollReveal';
-import GlowCard from '../components/GlowCard';
 import NotFoundPage from './NotFoundPage';
 
 export default function CasePage() {
@@ -29,40 +27,30 @@ export default function CasePage() {
         Все кейсы
       </Link>
 
-      <header className="mb-10">
-        <ScrollReveal delay={0}>
-          <div className="mb-4">
-            <Badge type={caseStudy.badge} label={caseStudy.badgeLabel} />
-          </div>
-        </ScrollReveal>
-        <ScrollReveal delay={0.1}>
-          <h1 className="mb-4 text-3xl font-bold text-white sm:text-4xl">{caseStudy.name}</h1>
-        </ScrollReveal>
-        <ScrollReveal delay={0.2}>
-          <p className="mb-6 text-lg leading-relaxed text-ink-300">{caseStudy.oneLiner}</p>
-        </ScrollReveal>
-        <ScrollReveal delay={0.3}>
-          <a
-            href={caseStudy.liveUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-accent-light hover:shadow-lg hover:shadow-accent/25"
-          >
-            Открыть сайт
-            <ExternalLink className="h-4 w-4" />
-          </a>
-        </ScrollReveal>
+      <header className="mb-10 border-b border-ink-800 pb-10">
+        <div className="mb-4">
+          <Badge type={caseStudy.badge} label={caseStudy.badgeLabel} />
+        </div>
+        <h1 className="mb-4 text-3xl font-bold text-ink-100 sm:text-4xl">{caseStudy.name}</h1>
+        <p className="mb-6 text-lg leading-relaxed text-ink-300">{caseStudy.oneLiner}</p>
+        <a
+          href={caseStudy.liveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-light"
+        >
+          Открыть сайт
+          <ExternalLink className="h-4 w-4" />
+        </a>
       </header>
 
-      <ScrollReveal>
-        <div className="mb-10">
-          {caseStudy.videoSrc ? (
-            <CaseVideo src={caseStudy.videoSrc} title={caseStudy.name} />
-          ) : (
-            <MediaPlaceholder label="Product Tour — видео-демо" type="video" />
-          )}
-        </div>
-      </ScrollReveal>
+      <div className="mb-10">
+        {caseStudy.videoSrc ? (
+          <CaseVideo src={caseStudy.videoSrc} title={caseStudy.name} />
+        ) : (
+          <MediaPlaceholder label="Product Tour — видео-демо" type="video" />
+        )}
+      </div>
 
       <div className="space-y-12">
         {caseStudy.miniResearch && (
@@ -138,28 +126,24 @@ export default function CasePage() {
 
         {caseStudy.showTestimonial && (
           <Section title="Отзыв заказчика">
-            <blockquote className="glass rounded-xl p-6 text-sm italic text-ink-300">
+            <blockquote className="card-solid p-5 text-sm italic text-ink-300">
               Отзыв будет добавлен
             </blockquote>
           </Section>
         )}
       </div>
 
-      <ScrollReveal>
-        <div className="mt-16">
-          <GlowCard className="glass rounded-2xl p-8 text-center">
-            <h2 className="mb-2 text-lg font-semibold text-white">Похожая задача?</h2>
-            <p className="mb-6 text-sm text-ink-300">Обсудим ваш проект — от идеи до запуска.</p>
-            <a
-              href={mailtoHref(`Кейс: ${caseStudy.name}`)}
-              className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-white transition hover:bg-accent-light hover:shadow-lg hover:shadow-accent/25"
-            >
-              <Mail className="h-4 w-4" />
-              Написать
-            </a>
-          </GlowCard>
-        </div>
-      </ScrollReveal>
+      <div className="mt-16 border-t border-ink-800 pt-10">
+        <h2 className="mb-2 text-lg font-semibold text-ink-100">Похожая задача?</h2>
+        <p className="mb-4 text-sm text-ink-300">Обсудим ваш проект — от идеи до запуска.</p>
+        <a
+          href={mailtoHref(`Кейс: ${caseStudy.name}`)}
+          className="inline-flex items-center gap-2 text-sm font-medium text-accent underline underline-offset-4 transition hover:text-accent-light"
+        >
+          <Mail className="h-4 w-4" />
+          Написать
+        </a>
+      </div>
     </article>
   );
 }

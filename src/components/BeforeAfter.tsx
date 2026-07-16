@@ -6,10 +6,10 @@ interface BeforeAfterProps {
 
 export default function BeforeAfter({ rows }: BeforeAfterProps) {
   return (
-    <div className="overflow-hidden rounded-xl border border-ink-800">
-      <div className="grid grid-cols-2 border-b border-ink-800 bg-ink-900/80 text-center text-xs font-semibold uppercase tracking-wide">
-        <div className="border-r border-ink-800 px-4 py-3 text-red-400/90">Было</div>
-        <div className="px-4 py-3 text-emerald-400/90">Стало</div>
+    <div className="overflow-hidden rounded-lg border border-ink-800">
+      <div className="grid grid-cols-2 border-b border-ink-800 bg-ink-950 text-center text-xs font-medium uppercase tracking-wide text-ink-500">
+        <div className="border-r border-ink-800 px-4 py-2.5">Было</div>
+        <div className="px-4 py-2.5">Стало</div>
       </div>
       {rows.map((row, i) => (
         <div

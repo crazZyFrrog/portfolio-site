@@ -2,51 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme: sage — меняй цвета здесь, они применятся сразу */
+:root {
+  --color-ink-950: #f2f4f0;
+  --color-ink-900: #fbfcf9;
+  --color-ink-800: #dfe4d9;
+  --color-ink-700: #cfd6c6;
+  --color-ink-500: #6b7364;
+  --color-ink-400: #555c50;
+  --color-ink-300: #3d4338;
+  --color-ink-100: #2a2f28;
+  --color-accent: #4a5d4a;
+  --color-accent-light: #3d4f3d;
+  --color-accent-muted: rgba(74, 93, 74, 0.1);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
+    color-scheme: light;
   }
 
   body {
-    @apply bg-ink-950 text-ink-100 antialiased;
+    @apply bg-ink-950 text-ink-300 antialiased;
   }
 }
 
 @layer components {
-  .gradient-text {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, #ffffff 0%, #818cf8 50%, #6366f1 100%);
-  }
-
-  .glass {
-    @apply border border-white/[0.08] bg-white/[0.04];
-    backdrop-filter: blur(12px);
-  }
-
-  .glow-card {
-    --mouse-x: 50%;
-    --mouse-y: 50%;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .glow-card::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    background: radial-gradient(
-      600px circle at var(--mouse-x) var(--mouse-y),
-      rgba(99, 102, 241, 0.12),
-      transparent 40%
-    );
-    pointer-events: none;
-    z-index: 1;
-  }
-
-  .glow-card:hover::before {
-    opacity: 1;
+  .card-solid {
+    @apply rounded-lg border border-ink-800 bg-ink-900;
   }
 }
 
