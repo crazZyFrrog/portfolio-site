@@ -7,9 +7,14 @@ interface SectionProps {
 
 export default function Section({ id, title, children, className = '' }: SectionProps) {
   return (
-    <section id={id} className={`scroll-mt-24 ${className}`}>
-      <h2 className="mb-4 text-lg font-semibold text-ink-100">{title}</h2>
-      {children}
+    <section
+      id={id}
+      className={`grid scroll-mt-24 gap-6 border-t border-ink-800 py-10 sm:py-12 lg:grid-cols-12 lg:gap-10 ${className}`}
+    >
+      <div className="lg:col-span-3">
+        <h2 className="font-display text-2xl leading-none text-ink-100 sm:text-3xl">{title}</h2>
+      </div>
+      <div className="lg:col-span-8 lg:col-start-5">{children}</div>
     </section>
   );
 }
@@ -20,11 +25,13 @@ interface BulletListProps {
 
 export function BulletList({ items }: BulletListProps) {
   return (
-    <ul className="space-y-2">
+    <ul className="divide-y divide-ink-800 border-y border-ink-800">
       {items.map((item, i) => (
-        <li key={i} className="flex gap-3 text-sm leading-relaxed text-ink-300">
-          <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-ink-500" />
-          {item}
+        <li key={i} className="flex gap-5 py-4 text-sm leading-relaxed text-ink-300">
+          <span className="pt-0.5 font-display text-lg text-accent">
+            {String(i + 1).padStart(2, '0')}
+          </span>
+          <span>{item}</span>
         </li>
       ))}
     </ul>
@@ -41,7 +48,7 @@ export function TagList({ items }: TagListProps) {
       {items.map((item) => (
         <span
           key={item}
-          className="rounded border border-ink-800 px-2.5 py-1 text-xs text-ink-300"
+          className="border border-ink-700 px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-ink-300"
         >
           {item}
         </span>

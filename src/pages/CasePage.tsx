@@ -1,5 +1,6 @@
+import { motion } from 'framer-motion';
 import { Link, useParams } from 'react-router-dom';
-import { ArrowLeft, ExternalLink, Mail } from 'lucide-react';
+import { ArrowLeft, ArrowUpRight, ExternalLink, Mail } from 'lucide-react';
 import { getCaseBySlug } from '../data/cases';
 import { mailtoHref } from '../data/profile';
 import Badge from '../components/Badge';
@@ -18,131 +19,173 @@ export default function CasePage() {
   }
 
   return (
-    <article className="mx-auto max-w-3xl px-4 py-10 sm:px-6 sm:py-14">
-      <Link
-        to="/#cases"
-        className="mb-8 inline-flex items-center gap-2 text-sm text-ink-500 transition hover:text-ink-300"
-      >
-        <ArrowLeft className="h-4 w-4" />
-        Все кейсы
-      </Link>
-
-      <header className="mb-10 border-b border-ink-800 pb-10">
-        <div className="mb-4">
-          <Badge type={caseStudy.badge} label={caseStudy.badgeLabel} />
-        </div>
-        <h1 className="mb-4 text-3xl font-bold text-ink-100 sm:text-4xl">{caseStudy.name}</h1>
-        <p className="mb-6 text-lg leading-relaxed text-ink-300">{caseStudy.oneLiner}</p>
-        <a
-          href={caseStudy.liveUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 rounded-md bg-accent px-4 py-2 text-sm font-medium text-white transition hover:bg-accent-light"
+    <article>
+      <div className="section-shell py-10 sm:py-14">
+        <Link
+          to="/#cases"
+          className="mb-10 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-500 transition hover:text-accent"
         >
-          Открыть сайт
-          <ExternalLink className="h-4 w-4" />
-        </a>
-      </header>
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Все проекты
+        </Link>
 
-      <div className="mb-10">
-        {caseStudy.videoSrc ? (
-          <CaseVideo src={caseStudy.videoSrc} title={caseStudy.name} />
-        ) : (
-          <MediaPlaceholder label="Product Tour — видео-демо" type="video" />
-        )}
-      </div>
-
-      <div className="space-y-12">
-        {caseStudy.miniResearch && (
-          <Section title="Мини-исследование">
-            <p className="text-sm leading-relaxed text-ink-300">{caseStudy.miniResearch}</p>
-          </Section>
-        )}
-
-        <Section title="Для кого сделан">
-          <p className="text-sm leading-relaxed text-ink-300">{caseStudy.madeFor}</p>
-          {caseStudy.targetAudience && (
-            <div className="mt-4">
-              <p className="mb-2 text-xs font-medium uppercase tracking-wide text-ink-500">
-                Кому подходит
+        <motion.header
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="grid gap-10 border-b border-ink-800 pb-12 lg:grid-cols-12 lg:pb-16"
+        >
+          <div className="lg:col-span-8">
+            <p className="eyebrow mb-6">Case study / {String(caseStudy.order).padStart(2, '0')}</p>
+            <h1 className="display-title mb-7 text-6xl sm:text-7xl lg:text-8xl">
+              {caseStudy.name}
+            </h1>
+            <p className="max-w-3xl text-base leading-relaxed text-ink-300 sm:text-lg">
+              {caseStudy.oneLiner}
+            </p>
+          </div>
+          <div className="flex flex-col justify-between border-l border-ink-800 pl-6 lg:col-span-4 lg:pl-8">
+            <div>
+              <div className="mb-7">
+                <Badge type={caseStudy.badge} label={caseStudy.badgeLabel} />
+              </div>
+              <p className="mb-3 text-[9px] font-semibold uppercase tracking-[0.16em] text-ink-500">
+                Моя роль
               </p>
-              <BulletList items={caseStudy.targetAudience} />
+              <p className="mb-8 text-sm leading-relaxed text-ink-300">
+                {caseStudy.role.slice(0, 3).join(' · ')}
+              </p>
             </div>
-          )}
-        </Section>
+            <a
+              href={caseStudy.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary self-start"
+            >
+              Открыть сайт
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </div>
+        </motion.header>
 
-        <Section title="Какую проблему решает">
-          <p className="text-sm leading-relaxed text-ink-300">{caseStudy.problem}</p>
-        </Section>
-
-        <Section title="Как было до">
-          <BulletList items={caseStudy.before} />
-        </Section>
-
-        <Section title="Было / Стало">
-          <BeforeAfter rows={caseStudy.beforeAfter} />
-        </Section>
-
-        <Section title="Что сделал">
-          <BulletList items={caseStudy.whatIDid} />
-        </Section>
-
-        <Section title="Что получилось">
-          <BulletList items={caseStudy.result} />
-        </Section>
-
-        {caseStudy.timeSavings && (
-          <Section title="Экономия времени">
-            <BulletList items={caseStudy.timeSavings} />
-          </Section>
-        )}
-
-        {caseStudy.moneySavings && (
-          <Section title="Экономия денег">
-            <BulletList items={caseStudy.moneySavings} />
-          </Section>
-        )}
-
-        {caseStudy.limitations && (
-          <Section title="Ограничения MVP">
-            <BulletList items={caseStudy.limitations} />
-          </Section>
-        )}
-
-        <Section title="Скриншоты">
-          <CaseScreenshotGrid
-            screenshots={caseStudy.screenshots}
-            placeholderLabels={caseStudy.screenshotLabels}
-          />
-        </Section>
-
-        <Section title="Стек">
-          <TagList items={caseStudy.stack} />
-        </Section>
-
-        <Section title="Моя роль">
-          <TagList items={caseStudy.role} />
-        </Section>
-
-        {caseStudy.showTestimonial && (
-          <Section title="Отзыв заказчика">
-            <blockquote className="card-solid p-5 text-sm italic text-ink-300">
-              Отзыв будет добавлен
-            </blockquote>
-          </Section>
-        )}
-      </div>
-
-      <div className="mt-16 border-t border-ink-800 pt-10">
-        <h2 className="mb-2 text-lg font-semibold text-ink-100">Похожая задача?</h2>
-        <p className="mb-4 text-sm text-ink-300">Обсудим ваш проект — от идеи до запуска.</p>
-        <a
-          href={mailtoHref(`Кейс: ${caseStudy.name}`)}
-          className="inline-flex items-center gap-2 text-sm font-medium text-accent underline underline-offset-4 transition hover:text-accent-light"
+        <motion.section
+          initial={{ opacity: 0, y: 28 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.15 }}
+          transition={{ duration: 0.7 }}
+          className="border-b border-ink-800 py-10 sm:py-14"
         >
-          <Mail className="h-4 w-4" />
-          Написать
-        </a>
+          <div className="mb-5 flex items-center justify-between">
+            <p className="eyebrow">Product tour</p>
+            <p className="text-[9px] uppercase tracking-[0.14em] text-ink-500">Видео-демо</p>
+          </div>
+          {caseStudy.videoSrc || caseStudy.videoEmbedUrl ? (
+            <CaseVideo
+              src={caseStudy.videoSrc}
+              embedUrl={caseStudy.videoEmbedUrl}
+              title={caseStudy.name}
+              caption={caseStudy.videoCaption}
+            />
+          ) : (
+            <MediaPlaceholder label="Product Tour — видео-демо" type="video" />
+          )}
+        </motion.section>
+
+        <div>
+          {caseStudy.miniResearch && (
+            <Section title="Мини-исследование">
+              <p className="text-sm leading-relaxed text-ink-300">{caseStudy.miniResearch}</p>
+            </Section>
+          )}
+
+          <Section title="Для кого сделан">
+            <p className="text-sm leading-relaxed text-ink-300">{caseStudy.madeFor}</p>
+            {caseStudy.targetAudience && (
+              <div className="mt-7">
+                <p className="eyebrow mb-3">Кому подходит</p>
+                <BulletList items={caseStudy.targetAudience} />
+              </div>
+            )}
+          </Section>
+
+          <Section title="Задача">
+            <p className="text-sm leading-relaxed text-ink-300">{caseStudy.problem}</p>
+          </Section>
+
+          <Section title="Как было до">
+            <BulletList items={caseStudy.before} />
+          </Section>
+
+          <Section title="Было / Стало">
+            <BeforeAfter rows={caseStudy.beforeAfter} />
+          </Section>
+
+          <Section title="Что сделал">
+            <BulletList items={caseStudy.whatIDid} />
+          </Section>
+
+          <Section title="Результат">
+            <BulletList items={caseStudy.result} />
+          </Section>
+
+          {caseStudy.timeSavings && (
+            <Section title="Экономия времени">
+              <BulletList items={caseStudy.timeSavings} />
+            </Section>
+          )}
+
+          {caseStudy.moneySavings && (
+            <Section title="Экономия денег">
+              <BulletList items={caseStudy.moneySavings} />
+            </Section>
+          )}
+
+          {caseStudy.limitations && (
+            <Section title="Ограничения MVP">
+              <BulletList items={caseStudy.limitations} />
+            </Section>
+          )}
+
+          <Section title="Интерфейс">
+            <CaseScreenshotGrid
+              screenshots={caseStudy.screenshots}
+              placeholderLabels={caseStudy.screenshotLabels}
+            />
+          </Section>
+
+          <Section title="Стек">
+            <TagList items={caseStudy.stack} />
+          </Section>
+
+          <Section title="Моя роль">
+            <TagList items={caseStudy.role} />
+          </Section>
+
+          {caseStudy.showTestimonial && (
+            <Section title="Отзыв заказчика">
+              <blockquote className="border-l border-accent bg-ink-900 p-6 font-display text-2xl italic text-ink-300">
+                Отзыв будет добавлен
+              </blockquote>
+            </Section>
+          )}
+        </div>
+
+        <div className="my-12 grid gap-8 border border-ink-800 bg-ink-900 p-7 sm:p-10 lg:grid-cols-12 lg:p-12">
+          <div className="lg:col-span-8">
+            <p className="eyebrow mb-4">Следующий шаг</p>
+            <h2 className="font-display text-4xl leading-none text-ink-100 sm:text-5xl">
+              Похожая задача?
+              <span className="block text-accent">Обсудим решение.</span>
+            </h2>
+          </div>
+          <div className="flex items-end lg:col-span-4 lg:justify-end">
+            <a href={mailtoHref(`Кейс: ${caseStudy.name}`)} className="btn-primary">
+              <Mail className="h-4 w-4" />
+              Написать
+              <ArrowUpRight className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
       </div>
     </article>
   );

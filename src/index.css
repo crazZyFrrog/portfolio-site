@@ -2,19 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Theme: sage — меняй цвета здесь, они применятся сразу */
 :root {
-  --color-ink-950: #f2f4f0;
-  --color-ink-900: #fbfcf9;
-  --color-ink-800: #dfe4d9;
-  --color-ink-700: #cfd6c6;
-  --color-ink-500: #6b7364;
-  --color-ink-400: #555c50;
-  --color-ink-300: #3d4338;
-  --color-ink-100: #2a2f28;
-  --color-accent: #4a5d4a;
-  --color-accent-light: #3d4f3d;
-  --color-accent-muted: rgba(74, 93, 74, 0.1);
+  --color-ink-950: #efe6d5;
+  --color-ink-900: #f8f1e4;
+  --color-ink-800: #cbbda7;
+  --color-ink-700: #a99980;
+  --color-ink-500: #70675b;
+  --color-ink-400: #504940;
+  --color-ink-300: #302c27;
+  --color-ink-100: #11100e;
+  --color-accent: #e48700;
+  --color-accent-light: #ffae20;
+  --color-accent-muted: rgba(228, 135, 0, 0.14);
 }
 
 @layer base {
@@ -25,12 +24,77 @@
 
   body {
     @apply bg-ink-950 text-ink-300 antialiased;
+    min-width: 320px;
+    background-image:
+      linear-gradient(rgba(17, 16, 14, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(17, 16, 14, 0.035) 1px, transparent 1px);
+    background-size: 72px 72px, 72px 72px;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-ink-950);
+  }
+
+  a,
+  button {
+    -webkit-tap-highlight-color: transparent;
   }
 }
 
 @layer components {
+  .section-shell {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10;
+  }
+
+  .eyebrow {
+    @apply text-[10px] font-semibold uppercase tracking-[0.28em] text-accent;
+  }
+
   .card-solid {
-    @apply rounded-lg border border-ink-800 bg-ink-900;
+    @apply border border-ink-800 bg-ink-900;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 border border-ink-100 bg-ink-100 px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-ink-950 transition duration-300 hover:border-accent hover:bg-accent hover:text-ink-100;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 border border-ink-700 px-5 py-3 text-xs font-semibold uppercase tracking-[0.16em] text-ink-100 transition duration-300 hover:border-accent hover:text-accent-light;
+  }
+
+  .editorial-rule {
+    @apply border-t border-ink-800;
+  }
+
+  .display-title {
+    @apply font-display font-bold uppercase leading-[0.86] tracking-[-0.045em] text-ink-100;
+  }
+
+  .image-treatment {
+    position: relative;
+    overflow: hidden;
+    background: var(--color-ink-900);
+  }
+
+  .image-treatment img {
+    filter: saturate(0.88) contrast(1.04);
+  }
+
+  .image-treatment::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, transparent 58%, rgba(8, 9, 7, 0.52)),
+      linear-gradient(90deg, rgba(228, 135, 0, 0.05), transparent 42%);
+  }
+}
+
+@media (max-width: 767px) {
+  .parallax-image {
+    transform: none !important;
   }
 }
 

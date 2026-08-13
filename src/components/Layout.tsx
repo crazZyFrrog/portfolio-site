@@ -1,31 +1,53 @@
-import { Link, Outlet } from 'react-router-dom';
-import { Mail } from 'lucide-react';
+import { useEffect } from 'react';
+import { Link, Outlet, useLocation } from 'react-router-dom';
+import { ArrowUpRight, Mail } from 'lucide-react';
 import { profile, mailtoHref } from '../data/profile';
 
 export default function Layout() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      return;
+    }
+
+    requestAnimationFrame(() => {
+      document.getElementById(location.hash.slice(1))?.scrollIntoView({ behavior: 'smooth' });
+    });
+  }, [location.pathname, location.hash]);
+
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 border-b border-ink-800 bg-ink-950">
-        <div className="mx-auto flex max-w-5xl items-center justify-end px-4 py-4 sm:px-6">
-          <nav className="flex items-center gap-5 sm:gap-6">
+      <header className="sticky top-0 z-50 border-b border-ink-800/80 bg-ink-950/90 backdrop-blur-xl">
+        <div className="section-shell flex h-16 items-center justify-between">
+          <Link
+            to="/"
+            aria-label="На главную"
+            className="font-display text-2xl font-semibold tracking-[-0.08em] text-ink-100 transition hover:text-accent"
+          >
+            VL<span className="text-accent">.</span>
+          </Link>
+
+          <nav className="flex items-center gap-5 sm:gap-8">
             <Link
               to="/#cases"
-              className="hidden text-sm text-ink-300 transition hover:text-ink-100 sm:inline"
+              className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-400 transition hover:text-accent sm:inline"
             >
-              Кейсы
+              Проекты
             </Link>
             <Link
               to="/#about"
-              className="hidden text-sm text-ink-300 transition hover:text-ink-100 sm:inline"
+              className="hidden text-[10px] font-semibold uppercase tracking-[0.18em] text-ink-400 transition hover:text-accent sm:inline"
             >
               О себе
             </Link>
             <a
               href={mailtoHref()}
-              className="inline-flex items-center gap-2 rounded-md bg-accent px-3 py-2 text-sm font-medium text-white transition hover:bg-accent-light sm:px-4"
+              className="inline-flex items-center gap-2 border border-ink-100 bg-ink-100 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-950 transition hover:border-accent hover:bg-accent sm:px-4"
             >
-              <Mail className="h-4 w-4" />
-              <span className="hidden sm:inline">Связаться</span>
+              <span>Обсудить проект</span>
+              <ArrowUpRight className="h-3.5 w-3.5" />
             </a>
           </nav>
         </div>
@@ -36,16 +58,25 @@ export default function Layout() {
       </main>
 
       <footer className="border-t border-ink-800 py-8">
-        <div className="mx-auto flex max-w-5xl flex-col items-center justify-between gap-4 px-4 text-center sm:flex-row sm:px-6 sm:text-left">
-          <p className="text-sm text-ink-500">
-            © {new Date().getFullYear()} {profile.name} · {profile.title}
-          </p>
-          <a
-            href={mailtoHref()}
-            className="text-sm text-ink-300 underline underline-offset-4 transition hover:text-accent"
-          >
-            {profile.email}
-          </a>
+        <div className="section-shell flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="mb-2 font-display text-3xl text-ink-100">VL<span className="text-accent">.</span></p>
+            <p className="max-w-sm text-xs leading-relaxed text-ink-500">
+              Цифровые продукты и автоматизация — от идеи до production.
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 text-left sm:text-right">
+            <a
+              href={mailtoHref()}
+              className="inline-flex items-center gap-2 text-xs text-ink-300 transition hover:text-accent sm:justify-end"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              {profile.email}
+            </a>
+            <p className="text-[10px] uppercase tracking-[0.14em] text-ink-500">
+              © {new Date().getFullYear()} {profile.name}
+            </p>
+          </div>
         </div>
       </footer>
     </div>

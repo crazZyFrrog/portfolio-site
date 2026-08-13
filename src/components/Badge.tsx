@@ -8,10 +8,14 @@ interface BadgeProps {
 export default function Badge({ type, label }: BadgeProps) {
   const styles =
     type === 'real'
-      ? 'border border-ink-800 text-ink-300'
-      : 'border border-ink-800 text-ink-500';
+      ? 'border-accent/60 bg-accent-muted text-accent-light'
+      : 'border-ink-700 text-ink-400';
 
   return (
-    <span className={`inline-flex rounded px-2 py-0.5 text-xs ${styles}`}>{label}</span>
+    <span
+      className={`inline-flex border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.16em] ${styles}`}
+    >
+      {label}
+    </span>
   );
 }
