@@ -14,3 +14,4 @@ Thumbs.db
 
 # Accidental nested repository; this project is deployed from the root.
 portfolio-site/
+.vercel
