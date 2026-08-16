@@ -1,1 +1,16 @@
 node_modules/
+dist/
+*.tsbuildinfo
+
+.env
+.env.*
+!.env.example
+*.local
+
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Accidental nested repository; this project is deployed from the root.
+portfolio-site/

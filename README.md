@@ -2,10 +2,15 @@
 
 Сайт-портфолио вайбкодера: кейсы salonlt.ru и Investment Academy.
 
+## Требования
+
+- Node.js 20.19+ (рекомендуется актуальная LTS)
+- npm
+
 ## Запуск
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -14,9 +19,34 @@ npm run dev
 ## Сборка
 
 ```bash
+npm run lint
+npm run typecheck
 npm run build
 npm run preview
 ```
+
+Сборка создаётся в `dist/`. Каталог генерируется заново и не хранится в git.
+
+## Деплой на Vercel
+
+1. Импортируйте корневой репозиторий в Vercel.
+2. Выберите Framework Preset `Vite`.
+3. Build Command: `npm run build`.
+4. Output Directory: `dist`.
+5. Install Command: `npm ci`.
+
+`vercel.json` содержит SPA fallback для React Router и базовые security headers. Vercel
+автоматически передаёт production-домен в `VERCEL_PROJECT_PRODUCTION_URL`; он используется
+для canonical URL, `robots.txt` и `sitemap.xml`. Для собственного домена задайте переменную
+`VITE_SITE_URL=https://example.com` без завершающего `/`.
+
+После деплоя проверьте:
+
+- прямой вход и обновление `/cases/salon-lt` и `/cases/investment-academy`;
+- клиентскую 404 на неизвестном URL;
+- локальное видео, Loom, изображения и `mailto:` ссылки;
+- `/robots.txt`, `/sitemap.xml`, social preview и response security headers;
+- Lighthouse на desktop и mobile.
 
 ## Структура
 

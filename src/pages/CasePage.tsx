@@ -7,6 +7,7 @@ import Badge from '../components/Badge';
 import BeforeAfter from '../components/BeforeAfter';
 import { CaseScreenshotGrid, CaseVideo } from '../components/CaseMedia';
 import MediaPlaceholder from '../components/MediaPlaceholder';
+import PageMetadata from '../components/PageMetadata';
 import Section, { BulletList, TagList } from '../components/Section';
 import NotFoundPage from './NotFoundPage';
 
@@ -20,6 +21,11 @@ export default function CasePage() {
 
   return (
     <article>
+      <PageMetadata
+        title={`${caseStudy.name} — кейс Vladislav Levonenko`}
+        description={caseStudy.oneLiner}
+        path={`/cases/${caseStudy.slug}`}
+      />
       <div className="section-shell py-10 sm:py-14">
         <Link
           to="/#cases"
@@ -82,6 +88,7 @@ export default function CasePage() {
           {caseStudy.videoSrc || caseStudy.videoEmbedUrl ? (
             <CaseVideo
               src={caseStudy.videoSrc}
+              poster={caseStudy.videoPoster}
               embedUrl={caseStudy.videoEmbedUrl}
               title={caseStudy.name}
               caption={caseStudy.videoCaption}

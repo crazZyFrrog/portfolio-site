@@ -31,6 +31,7 @@ export interface CaseStudy {
   targetAudience?: string[];
   limitations?: string[];
   videoSrc?: string;
+  videoPoster?: string;
   videoEmbedUrl?: string;
   videoCaption?: string;
   screenshots?: CaseScreenshot[];
@@ -93,6 +94,7 @@ export const cases: CaseStudy[] = [
     stack: ['React 18', 'Vite', 'Tailwind CSS', 'PHP', 'SQLite', 'Telegram Bot API', 'VK API', 'Timeweb'],
     role: ['Full-stack разработка', 'Интеграции Telegram/VK', 'Админка', 'Деплой и передача заказчику'],
     videoSrc: '/video/salon-lt-demo.mp4',
+    videoPoster: '/images/salon-lt/01-hero.jpg',
     videoCaption: 'Product Tour — запись на сайте и уведомления мастерам',
     screenshots: [
       { label: 'Главный экран — позиционирование салона и CTA', src: '/images/salon-lt/01-hero.jpg' },
@@ -102,9 +104,9 @@ export const cases: CaseStudy[] = [
       { label: 'Портфолио реальных работ', src: '/images/salon-lt/05-works.jpg' },
       { label: 'Понятный сценарий записи в четыре шага', src: '/images/salon-lt/06-booking-steps.jpg' },
       { label: 'Онлайн-запись — мастер, услуга, дата и свободное время', src: '/images/salon-lt/07-booking-form.jpg' },
-      { label: 'Уведомление в Telegram', src: '/images/salon-lt/05-telegram.png' },
-      { label: 'Уведомление в VK', src: '/images/salon-lt/06-vk.png' },
-      { label: 'Админка — список записей', src: '/images/salon-lt/07-admin.png' },
+      { label: 'Уведомление в Telegram — демонстрационные данные', src: '/images/salon-lt/05-telegram.webp' },
+      { label: 'Уведомление в VK — демонстрационные данные', src: '/images/salon-lt/06-vk.webp' },
+      { label: 'Админка — демонстрационный список записей', src: '/images/salon-lt/07-admin.webp' },
     ],
     showTestimonial: false,
     order: 1,

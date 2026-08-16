@@ -3,12 +3,13 @@ import MediaPlaceholder from './MediaPlaceholder';
 
 interface CaseVideoProps {
   src?: string;
+  poster?: string;
   embedUrl?: string;
   title: string;
   caption?: string;
 }
 
-export function CaseVideo({ src, embedUrl, title, caption }: CaseVideoProps) {
+export function CaseVideo({ src, poster, embedUrl, title, caption }: CaseVideoProps) {
   return (
     <div className="overflow-hidden border border-ink-800 bg-ink-900">
       {embedUrl ? (
@@ -23,6 +24,7 @@ export function CaseVideo({ src, embedUrl, title, caption }: CaseVideoProps) {
       ) : (
         <video
           src={src}
+          poster={poster}
           controls
           playsInline
           preload="metadata"

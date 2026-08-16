@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom';
+import PageMetadata from '../components/PageMetadata';
 
 export default function NotFoundPage() {
   return (
     <div className="mx-auto flex max-w-5xl flex-col items-center px-4 py-24 text-center sm:px-6">
+      <PageMetadata
+        title="Страница не найдена — Vladislav Levonenko"
+        description="Запрошенная страница не найдена."
+        path={window.location.pathname}
+        noIndex
+      />
       <h1 className="mb-4 text-4xl font-bold text-ink-100">404</h1>
       <p className="mb-8 text-ink-300">Страница не найдена</p>
       <Link

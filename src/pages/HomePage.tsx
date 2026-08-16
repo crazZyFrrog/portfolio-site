@@ -12,6 +12,7 @@ import {
 import { profile, mailtoHref } from '../data/profile';
 import { getSortedCases } from '../data/cases';
 import CaseCard from '../components/CaseCard';
+import PageMetadata from '../components/PageMetadata';
 
 const services = [
   {
@@ -76,6 +77,7 @@ interface ParallaxImageProps {
   alt: string;
   className?: string;
   objectPosition?: string;
+  priority?: boolean;
 }
 
 function ParallaxImage({
@@ -83,6 +85,7 @@ function ParallaxImage({
   alt,
   className = '',
   objectPosition = 'center',
+  priority = false,
 }: ParallaxImageProps) {
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
@@ -90,13 +93,15 @@ function ParallaxImage({
     offset: ['start end', 'end start'],
   });
   const y = useTransform(scrollYProgress, [0, 1], [-22, 22]);
+  const priorityAttribute = priority ? { fetchpriority: 'high' } : {};
 
   return (
     <div ref={ref} className={`image-treatment overflow-hidden ${className}`}>
       <motion.img
         src={src}
         alt={alt}
-        loading="lazy"
+        loading={priority ? 'eager' : 'lazy'}
+        {...priorityAttribute}
         style={{ y, objectPosition }}
         className="parallax-image -my-[5%] h-[110%] w-full object-cover transition duration-700 group-hover:scale-[1.025]"
       />
@@ -109,6 +114,11 @@ export default function HomePage() {
 
   return (
     <>
+      <PageMetadata
+        title="Vladislav Levonenko — full-stack разработчик"
+        description="Сайты, цифровые продукты и автоматизация от идеи до production."
+        path="/"
+      />
       <section className="relative overflow-hidden border-b border-ink-800">
         <div className="section-shell grid min-h-[calc(100svh-4rem)] items-stretch lg:grid-cols-12">
           <motion.div
@@ -159,6 +169,7 @@ export default function HomePage() {
               alt="Настоящее рабочее пространство с клавиатурой и инструментами"
               className="absolute inset-0 -mx-5 sm:-mx-8 lg:mx-0 lg:ml-10"
               objectPosition="58% center"
+              priority
             />
             <div className="absolute inset-x-0 bottom-0 z-10 flex items-end justify-between p-6 lg:left-10">
               <div>
