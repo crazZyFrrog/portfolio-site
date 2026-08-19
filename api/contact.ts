@@ -1,28 +1,228 @@
-import { handleContactSubmission } from '../server/contact';
+const allowedServices = new Set([
+  'Лендинг',
+  'Онлайн-запись',
+  'Автоматизация',
+  'Админ-панель',
+  'Другое',
+]);
 
-interface ApiRequest {
-  method?: string;
-  body?: unknown;
+export interface ContactEnvironment {
+  TELEGRAM_BOT_TOKEN?: string;
+  TELEGRAM_CHAT_ID?: string;
+  WEB3FORMS_ACCESS_KEY?: string;
 }
 
-interface ApiResponse {
-  status: (code: number) => ApiResponse;
-  json: (body: unknown) => void;
-  setHeader: (name: string, value: string) => void;
+export interface ContactResult {
+  status: number;
+  body: { success?: true; error?: string };
 }
 
-export default async function contactHandler(request: ApiRequest, response: ApiResponse) {
-  if (request.method !== 'POST') {
-    response.setHeader('Allow', 'POST');
-    response.status(405).json({ error: 'Метод не поддерживается.' });
-    return;
+interface ContactData {
+  name: string;
+  phone: string;
+  service: string;
+  email: string;
+  source: string;
+}
+
+function getString(value: unknown, maxLength: number) {
+  return typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
+}
+
+function parseContactData(input: unknown): ContactData | string {
+  if (!input || typeof input !== 'object') {
+    return 'Некорректные данные формы.';
   }
 
-  const result = await handleContactSubmission(request.body, {
+  const payload = input as Record<string, unknown>;
+  const name = getString(payload.name, 80);
+  const phone = getString(payload.phone, 40);
+  const service = getString(payload.service, 40);
+  const email = getString(payload.email, 120);
+  const source = getString(payload.source, 120) || 'Сайт';
+
+  if (name.length < 2) {
+    return 'Укажите имя.';
+  }
+
+  if ((phone.match(/\d/g) ?? []).length < 6) {
+    return 'Укажите корректный номер телефона.';
+  }
+
+  if (!allowedServices.has(service)) {
+    return 'Выберите услугу из списка.';
+  }
+
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return 'Укажите корректный email.';
+  }
+
+  return { name, phone, service, email, source };
+}
+
+async function sendTelegram(data: ContactData, env: ContactEnvironment) {
+  const token = env.TELEGRAM_BOT_TOKEN;
+  const chatId = env.TELEGRAM_CHAT_ID;
+
+  if (!token || !chatId) {
+    throw new Error('Telegram environment variables are not configured');
+  }
+
+  const lines = [
+    'Новая заявка с портфолио',
+    '',
+    `Имя: ${data.name}`,
+    `Телефон: ${data.phone}`,
+    `Услуга: ${data.service}`,
+    `Email: ${data.email || 'не указан'}`,
+    `Источник: ${data.source}`,
+  ];
+
+  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: lines.join('\n'),
+      disable_web_page_preview: true,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Telegram returned ${response.status}`);
+  }
+}
+
+async function sendEmail(data: ContactData, env: ContactEnvironment) {
+  if (!env.WEB3FORMS_ACCESS_KEY) {
+    throw new Error('Web3Forms environment variable is not configured');
+  }
+
+  const response = await fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      access_key: env.WEB3FORMS_ACCESS_KEY,
+      subject: `Новая заявка: ${data.service}`,
+      from_name: 'Портфолио Vladislav Levonenko',
+      name: data.name,
+      phone: data.phone,
+      service: data.service,
+      email: data.email || undefined,
+      source: data.source,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Web3Forms returned ${response.status}`);
+  }
+
+  const result = (await response.json()) as { success?: boolean };
+  if (!result.success) {
+    throw new Error('Web3Forms rejected the request');
+  }
+}
+
+export async function handleContactSubmission(
+  input: unknown,
+  env: ContactEnvironment,
+): Promise<ContactResult> {
+  if (input && typeof input === 'object' && getString((input as Record<string, unknown>).website, 200)) {
+    return { status: 200, body: { success: true } };
+  }
+
+  const data = parseContactData(input);
+  if (typeof data === 'string') {
+    return { status: 400, body: { error: data } };
+  }
+
+  try {
+    await Promise.all([sendTelegram(data, env), sendEmail(data, env)]);
+    return { status: 200, body: { success: true } };
+  } catch (error) {
+    console.error('Contact delivery failed:', error);
+    return {
+      status: 502,
+      body: { error: 'Не удалось доставить заявку. Напишите мне напрямую по email.' },
+    };
+  }
+}
+
+function envFromProcess(): ContactEnvironment {
+  return {
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
     TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
     WEB3FORMS_ACCESS_KEY: process.env.WEB3FORMS_ACCESS_KEY,
-  });
-
-  response.status(result.status).json(result.body);
+  };
 }
+
+async function readJsonBody(request: Request): Promise<unknown> {
+  const text = await request.text();
+  if (!text) {
+    return null;
+  }
+
+  return JSON.parse(text) as unknown;
+}
+
+type NodeLikeRequest = Request & {
+  method?: string;
+  body?: unknown;
+};
+
+interface NodeLikeResponse {
+  status: (code: number) => { json: (body: unknown) => void };
+}
+
+async function resolvePayload(request: NodeLikeRequest) {
+  if (request.body !== undefined && typeof request.json !== 'function') {
+    return request.body;
+  }
+
+  if (typeof request.json === 'function' || typeof request.text === 'function') {
+    return readJsonBody(request);
+  }
+
+  return request.body ?? null;
+}
+
+export async function POST(request: Request) {
+  try {
+    const payload = await resolvePayload(request);
+    const result = await handleContactSubmission(payload, envFromProcess());
+    return Response.json(result.body, { status: result.status });
+  } catch (error) {
+    console.error('Contact function failed:', error);
+    return Response.json(
+      { error: 'Не удалось отправить заявку. Попробуйте ещё раз.' },
+      { status: 500 },
+    );
+  }
+}
+
+export default async function handler(request: NodeLikeRequest, response?: NodeLikeResponse) {
+  if (response && typeof response.status === 'function') {
+    try {
+      if (request.method !== 'POST') {
+        response.status(405).json({ error: 'Метод не поддерживается.' });
+        return;
+      }
+
+      const payload = await resolvePayload(request);
+      const result = await handleContactSubmission(payload, envFromProcess());
+      response.status(result.status).json(result.body);
+    } catch (error) {
+      console.error('Contact function failed:', error);
+      response.status(500).json({ error: 'Не удалось отправить заявку. Попробуйте ещё раз.' });
+    }
+    return;
+  }
+
+  if (request.method && request.method !== 'POST') {
+    return Response.json({ error: 'Метод не поддерживается.' }, { status: 405 });
+  }
+
+  return POST(request);
+}
+
+export const runtime = 'nodejs';

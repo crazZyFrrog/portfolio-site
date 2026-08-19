@@ -81,7 +81,14 @@ function ContactModal({ source, onClose }: ContactModalProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...payload, source }),
       });
-      const result = (await response.json()) as { error?: string };
+      const raw = await response.text();
+      let result: { error?: string } = {};
+
+      try {
+        result = raw ? (JSON.parse(raw) as { error?: string }) : {};
+      } catch {
+        throw new Error('Не удалось отправить заявку. Попробуйте ещё раз.');
+      }
 
       if (!response.ok) {
         throw new Error(result.error || 'Не удалось отправить заявку.');
