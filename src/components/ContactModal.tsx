@@ -144,7 +144,7 @@ function ContactModal({ source, onClose }: ContactModalProps) {
       }
 
       setStatus('success');
-      event.currentTarget.reset();
+      formRef.current?.reset();
     } catch (submitError) {
       setStatus('error');
       setError(
