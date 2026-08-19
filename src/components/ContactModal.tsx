@@ -16,16 +16,6 @@ const services = ['Лендинг', 'Онлайн-запись', 'Автомат
 type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error';
 type LeadPayload = Record<string, FormDataEntryValue | string>;
 
-function leadMessage(payload: LeadPayload) {
-  return [
-    `Имя: ${payload.name}`,
-    `Телефон: ${payload.phone}`,
-    `Услуга: ${payload.service}`,
-    `Email: ${payload.email || 'не указан'}`,
-    `Источник: ${payload.source}`,
-  ].join('\n');
-}
-
 async function submitTelegramLead(payload: LeadPayload) {
   try {
     const response = await fetch('/api/contact', {
@@ -58,11 +48,10 @@ async function submitEmailLead(payload: LeadPayload) {
         subject: `Новая заявка: ${payload.service}`,
         from_name: 'Портфолио Vladislav Levonenko',
         name: payload.name,
-        phone: payload.phone,
-        service: payload.service,
         email: payload.email || undefined,
-        source: payload.source,
-        message: leadMessage(payload),
+        Телефон: payload.phone,
+        Услуга: payload.service,
+        Источник: payload.source,
       }),
     });
     const result = (await response.json()) as { success?: boolean };

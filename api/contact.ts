@@ -28,6 +28,31 @@ function getString(value: unknown, maxLength: number) {
   return typeof value === 'string' ? value.trim().slice(0, maxLength) : '';
 }
 
+function escapeHtml(value: string) {
+  return value.replace(/[&<>]/g, (character) => {
+    const entities: Record<string, string> = {
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+    };
+    return entities[character];
+  });
+}
+
+function normalizePhone(phone: string) {
+  const digits = phone.replace(/\D/g, '');
+
+  if (digits.length === 11 && digits.startsWith('8')) {
+    return `7${digits.slice(1)}`;
+  }
+
+  if (digits.length === 10 && digits.startsWith('9')) {
+    return `7${digits}`;
+  }
+
+  return digits;
+}
+
 function parseContactData(input: unknown): ContactData | string {
   if (!input || typeof input !== 'object') {
     return 'Некорректные данные формы.';
@@ -67,14 +92,21 @@ async function sendTelegram(data: ContactData, env: ContactEnvironment) {
     throw new Error('Telegram environment variables are not configured');
   }
 
+  const submittedAt = new Intl.DateTimeFormat('ru-RU', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+    timeZone: 'Europe/Moscow',
+  }).format(new Date());
+  const whatsappPhone = normalizePhone(data.phone);
   const lines = [
-    'Новая заявка с портфолио',
+    '<b>Новая заявка с портфолио</b>',
     '',
-    `Имя: ${data.name}`,
-    `Телефон: ${data.phone}`,
-    `Услуга: ${data.service}`,
-    `Email: ${data.email || 'не указан'}`,
-    `Источник: ${data.source}`,
+    `<b>Имя:</b> ${escapeHtml(data.name)}`,
+    `<b>Телефон:</b> ${escapeHtml(data.phone)}`,
+    `<b>Услуга:</b> ${escapeHtml(data.service)}`,
+    `<b>Email:</b> ${escapeHtml(data.email || 'не указан')}`,
+    `<b>Источник:</b> ${escapeHtml(data.source)}`,
+    `<b>Получена:</b> ${submittedAt} МСК`,
   ];
 
   const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -83,7 +115,21 @@ async function sendTelegram(data: ContactData, env: ContactEnvironment) {
     body: JSON.stringify({
       chat_id: chatId,
       text: lines.join('\n'),
+      parse_mode: 'HTML',
       disable_web_page_preview: true,
+      reply_markup:
+        whatsappPhone.length >= 10
+          ? {
+              inline_keyboard: [
+                [
+                  {
+                    text: 'Написать в WhatsApp',
+                    url: `https://wa.me/${whatsappPhone}`,
+                  },
+                ],
+              ],
+            }
+          : undefined,
     }),
   });
 
