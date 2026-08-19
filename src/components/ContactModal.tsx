@@ -14,6 +14,63 @@ import { ContactModalContext } from './ContactModalContext';
 const services = ['Лендинг', 'Онлайн-запись', 'Автоматизация', 'Админ-панель', 'Другое'];
 
 type SubmitStatus = 'idle' | 'submitting' | 'success' | 'error';
+type LeadPayload = Record<string, FormDataEntryValue | string>;
+
+function leadMessage(payload: LeadPayload) {
+  return [
+    `Имя: ${payload.name}`,
+    `Телефон: ${payload.phone}`,
+    `Услуга: ${payload.service}`,
+    `Email: ${payload.email || 'не указан'}`,
+    `Источник: ${payload.source}`,
+  ].join('\n');
+}
+
+async function submitTelegramLead(payload: LeadPayload) {
+  try {
+    const response = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    return response.ok;
+  } catch {
+    return false;
+  }
+}
+
+async function submitEmailLead(payload: LeadPayload) {
+  const accessKey = import.meta.env.VITE_WEB3FORMS_ACCESS_KEY;
+  if (!accessKey) {
+    return false;
+  }
+
+  try {
+    const response = await fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        access_key: accessKey,
+        subject: `Новая заявка: ${payload.service}`,
+        from_name: 'Портфолио Vladislav Levonenko',
+        name: payload.name,
+        phone: payload.phone,
+        service: payload.service,
+        email: payload.email || undefined,
+        source: payload.source,
+        message: leadMessage(payload),
+      }),
+    });
+    const result = (await response.json()) as { success?: boolean };
+    return response.ok && Boolean(result.success);
+  } catch {
+    return false;
+  }
+}
 
 export function ContactModalProvider({ children }: { children: ReactNode }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -74,24 +131,16 @@ function ContactModal({ source, onClose }: ContactModalProps) {
 
     const formData = new FormData(event.currentTarget);
     const payload = Object.fromEntries(formData.entries());
+    const body = { ...payload, source };
 
     try {
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...payload, source }),
-      });
-      const raw = await response.text();
-      let result: { error?: string } = {};
+      const [telegramOk, emailOk] = await Promise.all([
+        submitTelegramLead(body),
+        submitEmailLead(body),
+      ]);
 
-      try {
-        result = raw ? (JSON.parse(raw) as { error?: string }) : {};
-      } catch {
-        throw new Error('Не удалось отправить заявку. Попробуйте ещё раз.');
-      }
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Не удалось отправить заявку.');
+      if (!telegramOk && !emailOk) {
+        throw new Error('Не удалось доставить заявку. Напишите мне напрямую по email.');
       }
 
       setStatus('success');

@@ -9,7 +9,6 @@ const allowedServices = new Set([
 export interface ContactEnvironment {
   TELEGRAM_BOT_TOKEN?: string;
   TELEGRAM_CHAT_ID?: string;
-  WEB3FORMS_ACCESS_KEY?: string;
 }
 
 export interface ContactResult {
@@ -61,8 +60,8 @@ function parseContactData(input: unknown): ContactData | string {
 }
 
 async function sendTelegram(data: ContactData, env: ContactEnvironment) {
-  const token = env.TELEGRAM_BOT_TOKEN;
-  const chatId = env.TELEGRAM_CHAT_ID;
+  const token = env.TELEGRAM_BOT_TOKEN?.trim();
+  const chatId = env.TELEGRAM_CHAT_ID?.trim();
 
   if (!token || !chatId) {
     throw new Error('Telegram environment variables are not configured');
@@ -89,37 +88,8 @@ async function sendTelegram(data: ContactData, env: ContactEnvironment) {
   });
 
   if (!response.ok) {
-    throw new Error(`Telegram returned ${response.status}`);
-  }
-}
-
-async function sendEmail(data: ContactData, env: ContactEnvironment) {
-  if (!env.WEB3FORMS_ACCESS_KEY) {
-    throw new Error('Web3Forms environment variable is not configured');
-  }
-
-  const response = await fetch('https://api.web3forms.com/submit', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      access_key: env.WEB3FORMS_ACCESS_KEY,
-      subject: `Новая заявка: ${data.service}`,
-      from_name: 'Портфолио Vladislav Levonenko',
-      name: data.name,
-      phone: data.phone,
-      service: data.service,
-      email: data.email || undefined,
-      source: data.source,
-    }),
-  });
-
-  if (!response.ok) {
-    throw new Error(`Web3Forms returned ${response.status}`);
-  }
-
-  const result = (await response.json()) as { success?: boolean };
-  if (!result.success) {
-    throw new Error('Web3Forms rejected the request');
+    const details = await response.text();
+    throw new Error(`Telegram returned ${response.status}: ${details}`);
   }
 }
 
@@ -137,7 +107,7 @@ export async function handleContactSubmission(
   }
 
   try {
-    await Promise.all([sendTelegram(data, env), sendEmail(data, env)]);
+    await sendTelegram(data, env);
     return { status: 200, body: { success: true } };
   } catch (error) {
     console.error('Contact delivery failed:', error);
@@ -152,7 +122,6 @@ function envFromProcess(): ContactEnvironment {
   return {
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
     TELEGRAM_CHAT_ID: process.env.TELEGRAM_CHAT_ID,
-    WEB3FORMS_ACCESS_KEY: process.env.WEB3FORMS_ACCESS_KEY,
   };
 }
 

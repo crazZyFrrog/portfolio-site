@@ -45,8 +45,9 @@ Production: **https://vladislav-levonenko.vercel.app**
 
 ### Форма «Обсудить проект»
 
-Форма отправляет каждую заявку в Telegram и дублирует её на email через Web3Forms.
-Секреты используются только в Vercel Function `/api/contact` и не попадают в браузер.
+Форма отправляет заявку в Telegram через Vercel Function `/api/contact` и дублирует её
+на email из браузера через Web3Forms. Токен бота остаётся только на сервере. Ключ
+Web3Forms специально публичный: их API на бесплатном плане блокирует вызовы с сервера.
 
 1. Создайте бота через [@BotFather](https://t.me/BotFather), откройте нового бота и нажмите
    **Start**. Сохраните токен бота.
@@ -55,12 +56,12 @@ Production: **https://vladislav-levonenko.vercel.app**
 3. Создайте access key на [Web3Forms](https://web3forms.com/) для
    `vladislavlevonenko@gmail.com` и подтвердите адрес из письма.
 4. В Vercel откройте **Project Settings → Environment Variables** и добавьте:
-   `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `WEB3FORMS_ACCESS_KEY`.
-5. Выполните Redeploy, чтобы функция получила новые переменные.
+   `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `VITE_WEB3FORMS_ACCESS_KEY`.
+5. Выполните Redeploy, чтобы сайт и функция получили новые переменные.
 
 Для локальной проверки скопируйте `.env.example` в `.env`, замените заглушки реальными
-значениями и запустите `npm run dev`. Файл `.env` исключён из git. Никогда не добавляйте
-секреты с префиксом `VITE_`: такие значения доступны клиентскому коду.
+значениями и запустите `npm run dev`. Файл `.env` исключён из git. Не добавляйте
+`TELEGRAM_BOT_TOKEN` и `TELEGRAM_CHAT_ID` с префиксом `VITE_`.
 
 После деплоя проверьте:
 
