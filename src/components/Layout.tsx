@@ -1,10 +1,21 @@
 import { useEffect } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { ArrowUpRight, Mail } from 'lucide-react';
-import { profile, mailtoHref } from '../data/profile';
+import { profile } from '../data/profile';
+import { ContactModalProvider } from './ContactModal';
+import { useContactModal } from './ContactModalContext';
 
 export default function Layout() {
+  return (
+    <ContactModalProvider>
+      <LayoutContent />
+    </ContactModalProvider>
+  );
+}
+
+function LayoutContent() {
   const location = useLocation();
+  const { openContactModal } = useContactModal();
 
   useEffect(() => {
     if (!location.hash) {
@@ -42,13 +53,14 @@ export default function Layout() {
             >
               О себе
             </Link>
-            <a
-              href={mailtoHref()}
+            <button
+              type="button"
+              onClick={() => openContactModal('Шапка сайта')}
               className="inline-flex items-center gap-2 border border-ink-100 bg-ink-100 px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.16em] text-ink-950 transition hover:border-accent hover:bg-accent sm:px-4"
             >
               <span>Обсудить проект</span>
               <ArrowUpRight className="h-3.5 w-3.5" />
-            </a>
+            </button>
           </nav>
         </div>
       </header>
@@ -67,7 +79,7 @@ export default function Layout() {
           </div>
           <div className="flex flex-col gap-2 text-left sm:text-right">
             <a
-              href={mailtoHref()}
+              href={`mailto:${profile.email}`}
               className="inline-flex items-center gap-2 text-xs text-ink-300 transition hover:text-accent sm:justify-end"
             >
               <Mail className="h-3.5 w-3.5" />

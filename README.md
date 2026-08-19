@@ -29,22 +29,44 @@ npm run preview
 
 ## Деплой на Vercel
 
-1. Импортируйте корневой репозиторий в Vercel.
-2. Выберите Framework Preset `Vite`.
-3. Build Command: `npm run build`.
-4. Output Directory: `dist`.
-5. Install Command: `npm ci`.
+Production: **https://vladislav-levonenko.vercel.app**
 
-`vercel.json` содержит SPA fallback для React Router и базовые security headers. Vercel
-автоматически передаёт production-домен в `VERCEL_PROJECT_PRODUCTION_URL`; он используется
-для canonical URL, `robots.txt` и `sitemap.xml`. Для собственного домена задайте переменную
-`VITE_SITE_URL=https://example.com` без завершающего `/`.
+1. Импортируйте корневой репозиторий в Vercel.
+2. Укажите **Project Name**: `vladislav-levonenko`.
+3. Выберите Framework Preset `Vite`.
+4. Build Command: `npm run build`.
+5. Output Directory: `dist`.
+6. Install Command: `npm ci`.
+
+`vercel.json` содержит SPA fallback для React Router и базовые security headers. На Vercel
+задана переменная `VITE_SITE_URL=https://vladislav-levonenko.vercel.app` — она используется
+для canonical URL, `robots.txt` и `sitemap.xml`. Для собственного домена замените значение
+без завершающего `/`.
+
+### Форма «Обсудить проект»
+
+Форма отправляет каждую заявку в Telegram и дублирует её на email через Web3Forms.
+Секреты используются только в Vercel Function `/api/contact` и не попадают в браузер.
+
+1. Создайте бота через [@BotFather](https://t.me/BotFather), откройте нового бота и нажмите
+   **Start**. Сохраните токен бота.
+2. Получите `chat.id`: после сообщения боту вызовите метод Telegram Bot API `getUpdates`
+   с токеном и найдите `message.chat.id` в ответе.
+3. Создайте access key на [Web3Forms](https://web3forms.com/) для
+   `vladislavlevonenko@gmail.com` и подтвердите адрес из письма.
+4. В Vercel откройте **Project Settings → Environment Variables** и добавьте:
+   `TELEGRAM_BOT_TOKEN`, `TELEGRAM_CHAT_ID`, `WEB3FORMS_ACCESS_KEY`.
+5. Выполните Redeploy, чтобы функция получила новые переменные.
+
+Для локальной проверки скопируйте `.env.example` в `.env`, замените заглушки реальными
+значениями и запустите `npm run dev`. Файл `.env` исключён из git. Никогда не добавляйте
+секреты с префиксом `VITE_`: такие значения доступны клиентскому коду.
 
 После деплоя проверьте:
 
 - прямой вход и обновление `/cases/salon-lt` и `/cases/investment-academy`;
 - клиентскую 404 на неизвестном URL;
-- локальное видео, Loom, изображения и `mailto:` ссылки;
+- локальное видео, Loom, изображения, форму заявки и прямую `mailto:` ссылку;
 - `/robots.txt`, `/sitemap.xml`, social preview и response security headers;
 - Lighthouse на desktop и mobile.
 

@@ -9,9 +9,10 @@ import {
   Mail,
   Workflow,
 } from 'lucide-react';
-import { profile, mailtoHref } from '../data/profile';
+import { profile } from '../data/profile';
 import { getSortedCases } from '../data/cases';
 import CaseCard from '../components/CaseCard';
+import { useContactModal } from '../components/ContactModalContext';
 import PageMetadata from '../components/PageMetadata';
 
 const services = [
@@ -111,6 +112,7 @@ function ParallaxImage({
 
 export default function HomePage() {
   const caseList = getSortedCases();
+  const { openContactModal } = useContactModal();
 
   return (
     <>
@@ -147,10 +149,14 @@ export default function HomePage() {
             </div>
 
             <div className="flex flex-col gap-6 border-t border-ink-800 pt-6 sm:flex-row sm:items-center">
-              <a href={mailtoHref()} className="btn-primary">
+              <button
+                type="button"
+                onClick={() => openContactModal('Главный экран')}
+                className="btn-primary"
+              >
                 Обсудить проект
                 <ArrowUpRight className="h-4 w-4" />
-              </a>
+              </button>
               <a href="#cases" className="group inline-flex items-center gap-3 text-xs uppercase tracking-[0.16em] text-ink-400 transition hover:text-ink-100">
                 Смотреть работы
                 <ArrowDownRight className="h-4 w-4 text-accent transition group-hover:translate-x-1 group-hover:translate-y-1" />
@@ -394,14 +400,15 @@ export default function HomePage() {
                 Лендинг, онлайн-запись, автоматизация или внутренний инструмент — обсудим задачу
                 и определим сильный первый шаг.
               </p>
-              <a
-                href={mailtoHref()}
+              <button
+                type="button"
+                onClick={() => openContactModal('Контактный блок')}
                 className="inline-flex items-center gap-3 border border-ink-950/30 bg-ink-950 px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-100 transition hover:border-accent hover:bg-accent"
               >
                 <Mail className="h-4 w-4" />
                 Написать мне
                 <ArrowUpRight className="h-4 w-4" />
-              </a>
+              </button>
             </div>
 
             <a

@@ -2,10 +2,10 @@ import { motion } from 'framer-motion';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, ArrowUpRight, ExternalLink, Mail } from 'lucide-react';
 import { getCaseBySlug } from '../data/cases';
-import { mailtoHref } from '../data/profile';
 import Badge from '../components/Badge';
 import BeforeAfter from '../components/BeforeAfter';
 import { CaseScreenshotGrid, CaseVideo } from '../components/CaseMedia';
+import { useContactModal } from '../components/ContactModalContext';
 import MediaPlaceholder from '../components/MediaPlaceholder';
 import PageMetadata from '../components/PageMetadata';
 import Section, { BulletList, TagList } from '../components/Section';
@@ -13,6 +13,7 @@ import NotFoundPage from './NotFoundPage';
 
 export default function CasePage() {
   const { slug } = useParams<{ slug: string }>();
+  const { openContactModal } = useContactModal();
   const caseStudy = slug ? getCaseBySlug(slug) : undefined;
 
   if (!caseStudy) {
@@ -186,11 +187,15 @@ export default function CasePage() {
             </h2>
           </div>
           <div className="flex items-end lg:col-span-4 lg:justify-end">
-            <a href={mailtoHref(`Кейс: ${caseStudy.name}`)} className="btn-primary">
+            <button
+              type="button"
+              onClick={() => openContactModal(`Кейс: ${caseStudy.name}`)}
+              className="btn-primary"
+            >
               <Mail className="h-4 w-4" />
               Написать
               <ArrowUpRight className="h-4 w-4" />
-            </a>
+            </button>
           </div>
         </div>
       </div>
